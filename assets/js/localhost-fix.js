@@ -66,6 +66,26 @@
     var _dw = document.write;
     document.write = function(h){ if (h && h.indexOf('about:blank') >= 0) return; return _dw.apply(document,arguments); };
 
+    // ── 4b. Block document.location = 'about:blank' (the ACTUAL redirect!) ──
+    // ui.obf.js does: window.document.location = 'about:blank'
+    // This intercepts Document.prototype.location setter
+    try {
+        var _locDesc = Object.getOwnPropertyDescriptor(Document.prototype, 'location');
+        if (_locDesc && _locDesc.set) {
+            Object.defineProperty(Document.prototype, 'location', {
+                get: _locDesc.get,
+                set: function(val) {
+                    if (isAbout(val)) {
+                        console.warn('[PKF] Blocked document.location =', val);
+                        return;
+                    }
+                    _locDesc.set.call(this, val);
+                },
+                configurable: true
+            });
+        }
+    } catch(e) {}
+
     // ── 5. history ────────────────────────────────────────────────────────
     ['pushState','replaceState'].forEach(function(m){
         try { var o = history[m]; history[m] = function(s,t,u){ if (!u || !isAbout(String(u))) return o.call(this,s,t,u); }; } catch(e){}
