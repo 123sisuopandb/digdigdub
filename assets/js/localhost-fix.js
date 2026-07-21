@@ -1,112 +1,146 @@
 /**
- * PKF Localhost Domain Lock Bypass v2
- * Patches Location.prototype (NOT window.location instance)
- * This is the correct level to intercept obfuscated domain checks.
+ * PKF Domain Lock Bypass v3
+ * Patches ALL ways JS can read hostname/domain.
+ * Must be first script to run on page.
  */
 (function () {
     'use strict';
 
-    var FAKE_HOST = 'privatekeyfinder.io';
+    var REAL_HOST = '';
+    try { REAL_HOST = window.location.hostname; } catch(e){}
+
+    var FAKE_HOST   = 'privatekeyfinder.io';
     var FAKE_ORIGIN = 'https://privatekeyfinder.io';
 
-    // ── 1. Override Location.prototype properties ─────────────────────
-    // These override WILL work because Location.prototype properties are configurable
-    var locProto = window.Location ? window.Location.prototype : Object.getPrototypeOf(window.location);
-
-    function safePatch(proto, prop, getter, setter) {
-        try {
-            var existing = Object.getOwnPropertyDescriptor(proto, prop);
-            var def = { configurable: true, enumerable: true };
-            if (getter) def.get = getter;
-            else if (existing && existing.get) def.get = existing.get;
-            if (setter) def.set = setter;
-            else if (existing && existing.set) def.set = existing.set;
-            Object.defineProperty(proto, prop, def);
-            return true;
-        } catch (e) {
-            return false;
-        }
+    function fakeHref(real) {
+        if (!real || typeof real !== 'string') return real;
+        try { return real.replace(REAL_HOST, FAKE_HOST); } catch(e){ return real; }
     }
 
-    // Fake hostname
-    safePatch(locProto, 'hostname', function () { return FAKE_HOST; });
-    safePatch(locProto, 'host',     function () { return FAKE_HOST; });
-    safePatch(locProto, 'origin',   function () { return FAKE_ORIGIN; });
+    function isAbout(url) {
+        if (!url || typeof url !== 'string') return false;
+        var u = url.trim().toLowerCase();
+        return u === 'about:blank' || u.indexOf('about:') === 0;
+    }
 
-    // Block href setter if it points to about:blank
-    var realHrefDesc = Object.getOwnPropertyDescriptor(locProto, 'href');
-    var realHrefSet = realHrefDesc && realHrefDesc.set;
-    safePatch(locProto, 'href',
-        realHrefDesc && realHrefDesc.get,
-        function (val) {
-            if (typeof val === 'string' && val.indexOf('about:') === 0) {
-                console.warn('[PKF-FIX] Blocked href:', val);
-                return;
-            }
-            if (realHrefSet) realHrefSet.call(this, val);
-        }
+    function patch(obj, prop, get, set) {
+        try {
+            var d = { configurable: true, enumerable: false };
+            if (get !== undefined) d.get = get;
+            if (set !== undefined) d.set = set;
+            Object.defineProperty(obj, prop, d);
+        } catch(e) {}
+    }
+
+    // ── 1. Location.prototype ─────────────────────────────────────────────
+    var LP = (typeof Location !== 'undefined') ? Location.prototype
+                : Object.getPrototypeOf(window.location);
+
+    var origHrefDesc = Object.getOwnPropertyDescriptor(LP, 'href') || {};
+    var origHrefGet  = origHrefDesc.get;
+    var origHrefSet  = origHrefDesc.set;
+
+    // hostname / host / origin
+    patch(LP, 'hostname', function(){ return FAKE_HOST; });
+    patch(LP, 'host',     function(){ return FAKE_HOST; });
+    patch(LP, 'origin',   function(){ return FAKE_ORIGIN; });
+    patch(LP, 'protocol', function(){ return 'https:'; });
+
+    // href getter → replace real host with fake host
+    // href setter → block about:blank
+    patch(LP, 'href',
+        function()  { return fakeHref(origHrefGet ? origHrefGet.call(this) : ''); },
+        function(v) { if (isAbout(v)) { console.warn('[PKF] Blocked href=',v); return; }
+                      if (origHrefSet) origHrefSet.call(this, v); }
     );
 
-    // ── 2. Patch replace() and assign() on prototype ──────────────────
-    try {
-        var _replace = locProto.replace;
-        locProto.replace = function (url) {
-            if (typeof url === 'string' && url.indexOf('about:') === 0) {
-                console.warn('[PKF-FIX] Blocked replace:', url);
-                return;
-            }
-            return _replace.call(this, url);
-        };
-    } catch (e) {}
+    // assign / replace
+    ['assign','replace'].forEach(function(m){
+        try {
+            var o = LP[m];
+            LP[m] = function(url) {
+                if (isAbout(url)) { console.warn('[PKF] Blocked location.'+m,url); return; }
+                return o.call(this, url);
+            };
+        } catch(e){}
+    });
 
-    try {
-        var _assign = locProto.assign;
-        locProto.assign = function (url) {
-            if (typeof url === 'string' && url.indexOf('about:') === 0) {
-                console.warn('[PKF-FIX] Blocked assign:', url);
-                return;
-            }
-            return _assign.call(this, url);
-        };
-    } catch (e) {}
+    // ── 2. document.* ─────────────────────────────────────────────────────
+    patch(document, 'domain',  function(){ return FAKE_HOST; }, function(){});
+    patch(document, 'URL',     function(){ return fakeHref(document.location.href); });
+    patch(document, 'baseURI', function(){ return fakeHref(document.location.href); });
+    patch(document, 'referrer',function(){ return FAKE_ORIGIN; });
 
-    // ── 3. Override document.domain ───────────────────────────────────
-    try {
-        Object.defineProperty(document, 'domain', {
-            get: function () { return FAKE_HOST; },
-            configurable: true
+    // ── 3. window.origin ──────────────────────────────────────────────────
+    patch(window, 'origin', function(){ return FAKE_ORIGIN; });
+
+    // ── 4. window.open ────────────────────────────────────────────────────
+    var _open = window.open;
+    window.open = function(url){ if(isAbout(url)) return null; return _open.apply(this,arguments); };
+
+    // ── 5. document.write/writeln ─────────────────────────────────────────
+    var _dw = document.write;
+    document.write = function(html){
+        if(typeof html==='string' && (html.indexOf('about:blank')>=0 || html.trim()==='')) return;
+        return _dw.apply(document, arguments);
+    };
+    var _dwl = document.writeln;
+    document.writeln = function(html){
+        if(typeof html==='string' && html.indexOf('about:blank')>=0) return;
+        return _dwl.apply(document, arguments);
+    };
+
+    // ── 6. history.pushState / replaceState ───────────────────────────────
+    ['pushState','replaceState'].forEach(function(m){
+        try {
+            var o = history[m];
+            history[m] = function(s,t,url){
+                if(url && isAbout(String(url))) return;
+                return o.call(this,s,t,url);
+            };
+        } catch(e){}
+    });
+
+    // ── 7. MutationObserver → kill meta refresh + blank iframes ──────────
+    new MutationObserver(function(ms){
+        ms.forEach(function(m){
+            (m.addedNodes||[]).forEach(function(n){
+                if(!n || !n.nodeName) return;
+                // meta refresh to about:
+                if(n.nodeName==='META' && (n.httpEquiv||'').toLowerCase()==='refresh'){
+                    if((n.content||'').toLowerCase().indexOf('about:')>=0) {
+                        n.parentNode && n.parentNode.removeChild(n);
+                    }
+                }
+                // iframe pointing to about:blank
+                if(n.nodeName==='IFRAME' && isAbout(n.src)) {
+                    n.removeAttribute('src');
+                }
+            });
         });
-    } catch (e) {}
+    }).observe(document.documentElement||document.body, {childList:true,subtree:true});
 
-    // ── 4. Also intercept via window setter (window = 'about:blank') ──
-    // Some obfuscators do: top.location = 'about:blank'
-    // Intercept via beforeunload
-    window.addEventListener('beforeunload', function (e) {
-        // Check if we're about to navigate to about:blank
-        if (document.URL === 'about:blank') {
-            e.preventDefault();
-            e.returnValue = '';
-        }
+    // ── 8. Catch navigation to about: via pagehide/beforeunload ──────────
+    window.addEventListener('beforeunload', function(e){
+        try {
+            if(document.hidden || isAbout(location.href)) {
+                e.preventDefault(); e.returnValue='';
+            }
+        } catch(ex){}
     }, true);
 
-    // ── 5. MutationObserver - catch any DOM wipes ─────────────────────
-    // If obfuscated code does document.write('') or clears body
-    var bodyCheckDone = false;
-    var obs = new MutationObserver(function (mutations) {
-        if (bodyCheckDone) return;
-        for (var i = 0; i < mutations.length; i++) {
-            if (mutations[i].removedNodes.length > 0) {
-                var cur = window.location.href;
-                if (cur.indexOf('about:') === 0) {
-                    console.warn('[PKF-FIX] Navigation to about: detected - stopping');
-                    history.back();
-                }
-            }
-        }
-    });
-    if (document.documentElement) {
-        obs.observe(document.documentElement, { childList: true, subtree: false });
+    // ── 9. Service Worker registration ────────────────────────────────────
+    if ('serviceWorker' in navigator) {
+        // Try both root and subpath scope
+        var swPath = (function(){
+            var p = window.location.pathname.replace(/\/[^/]*$/, '/') || '/';
+            return p + 'sw.js';
+        })();
+        navigator.serviceWorker.register(swPath)
+            .then(function(r){ console.log('[PKF] SW registered', r.scope); })
+            .catch(function(){ /* SW not available on this path */ });
     }
 
-    console.log('[PKF-FIX v2] Active — hostname:', window.location.hostname, '→ spoofed to', FAKE_HOST);
+    console.log('[PKF v3] Bypass ACTIVE. Host spoofed to:', FAKE_HOST,
+                '| Real was:', REAL_HOST);
 })();
