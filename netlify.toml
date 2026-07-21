@@ -1,0 +1,43 @@
+[build]
+  # No build command needed - pure static site
+  publish = "."
+
+[build.environment]
+  # Read domain from .env file
+  NODE_VERSION = "18"
+
+# Headers for all files
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Cache CSS and JS files
+[[headers]]
+  for = "/assets/css/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/assets/js/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Cache SVGs and images
+[[headers]]
+  for = "/assets/svgs/*"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+
+[[headers]]
+  for = "/assets/png/*"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+
+# CORS for crypto assets
+[[headers]]
+  for = "/assets/crypto/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"

@@ -1,0 +1,17 @@
+# Python scripts (not needed for deployment)
+*.py
+__pycache__/
+*.pyc
+
+# Batch files
+*.bat
+
+# Environment
+.env
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
