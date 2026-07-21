@@ -1,11 +1,11 @@
 /**
  * PKF Domain Lock Bypass v5 — MINIMAL & SAFE
- * 
- * We've already patched ALL .obf.js files directly (let _0x...=!![] fix).
- * This script ONLY blocks about:blank redirects as a safety net.
- * 
- * We do NOT spoof hostname/href anymore — that was breaking navigation!
- * Direct .obf.js patches make spoofing unnecessary.
+ *
+ * 1. Blocks about:blank redirects (safety net)
+ * 2. Fixes GitHub Pages base-path: /private-keys/bitcoin/3
+ *                               → /digdigdub/private-keys/bitcoin/3.html
+ *
+ * Direct .obf.js patches handle domain check bypass.
  */
 (function () {
     'use strict';
@@ -15,6 +15,45 @@
         return url.trim().toLowerCase().indexOf('about:') === 0;
     }
 
+    // ── Base path fixer for GitHub Pages ─────────────────────────────────
+    // On GitHub Pages the site lives at /digdigdub/
+    // but app.obf.js navigates using absolute paths like /private-keys/bitcoin/3
+    var IS_GITHUB_PAGES = window.location.hostname.indexOf('github.io') !== -1;
+    var BASE = '/digdigdub';
+    // All top-level paths used by this site
+    var SITE_PATHS = [
+        '/private-keys/', '/tools/', '/mnemonic', '/paper-wallet',
+        '/wallet-viewer', '/richest', '/halving', '/milk-sad',
+        '/keystore', '/vanity', '/defi', '/bitcoin-puzzle', '/key-details',
+        '/crypto-calculator'
+    ];
+
+    function fixPath(url) {
+        if (!IS_GITHUB_PAGES) return url;
+        if (!url || typeof url !== 'string') return url;
+        // Only fix absolute paths starting with /, not http:// or /digdigdub/
+        if (url.charAt(0) !== '/') return url;
+        if (url.indexOf(BASE + '/') === 0) return url; // already has base
+        // Check if it's one of our site paths
+        for (var i = 0; i < SITE_PATHS.length; i++) {
+            if (url.indexOf(SITE_PATHS[i]) === 0 || url === SITE_PATHS[i].replace(/\/$/, '')) {
+                var fixed = BASE + url;
+                // Add .html if no extension and no query hash
+                var qIdx = fixed.indexOf('?');
+                var hIdx = fixed.indexOf('#');
+                var end = fixed;
+                if (qIdx > -1) end = fixed.substring(0, qIdx);
+                if (hIdx > -1) end = fixed.substring(0, hIdx);
+                if (end.indexOf('.') === -1 || end.lastIndexOf('.') < end.lastIndexOf('/')) {
+                    fixed = fixed + '.html';
+                }
+                console.log('[PKF] Path fixed:', url, '→', fixed);
+                return fixed;
+            }
+        }
+        return url;
+    }
+
     // ── 1. Block Location.prototype href SETTER only (not getter!) ────────
     var LP = (typeof Location !== 'undefined') ? Location.prototype
                 : Object.getPrototypeOf(window.location);
@@ -22,10 +61,10 @@
     var hs = hd.set;
     if (hs) {
         Object.defineProperty(LP, 'href', {
-            get: hd.get,  // original getter — returns REAL URL (for correct navigation)
+            get: hd.get,
             set: function(v) {
                 if (isAbout(v)) { console.warn('[PKF] Blocked href =', v); return; }
-                hs.call(this, v);
+                hs.call(this, fixPath(v));
             },
             configurable: true
         });
@@ -37,7 +76,7 @@
             var o = LP[m];
             LP[m] = function(url) {
                 if (isAbout(url)) { console.warn('[PKF] Blocked location.' + m, url); return; }
-                return o.call(this, url);
+                return o.call(this, fixPath(url));
             };
         } catch(e) {}
     });
