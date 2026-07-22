@@ -414,39 +414,41 @@ header{margin-bottom:1.5rem}
             <div class="page-info-text">
                 <img src="../assets/svgs/chain/sui.svg" width="24" height="24" class="crypto-icon " alt="sui">                <span>
                     Sui keys page
-                    <strong>#1</strong>
+                    <strong id="pkf-page-num">#1</strong>
                     out of <strong>#1.93E+75</strong>
                 </span>
             </div>
             <div class="progress-bar-wrapper">
-                <div class="progress-bar" style="width: 0%">
-                    <span class="progress-text">0.0000%</span>
+                <div class="progress-bar" id="pkf-progress-bar" style="width: 0%">
+                    <span class="progress-text" id="pkf-progress-text">0.0000%</span>
                 </div>
             </div>
         </div>
 
         <!-- Navigation Bar -->
+                <!-- Navigation Bar -->
         <div class="nav-bar">
             <div class="nav-buttons">
-                <a href="./sui.html" class="btn btn-outline-secondary btn-sm">
+                <a href="#" id="btn-first" class="btn btn-outline-secondary btn-sm">
                     <svg class="icon " width="20" height="20"><use href="../assets/svgs/icons.svg#icon-first"></use></svg> First
                 </a>
-                <a href="./sui.html" class="btn btn-outline-secondary btn-sm">
+                <a href="#" id="btn-prev" class="btn btn-outline-secondary btn-sm">
                     <svg class="icon " width="20" height="20"><use href="../assets/svgs/icons.svg#icon-prev"></use></svg> Previous
                 </a>
-                <a href="../private-keys/sui/481411542891110232306426196034871698092578352267334514899824487603727854787.html" class="btn btn-outline-warning btn-sm" id="randomPageBtn">
+                <a href="#" id="btn-random" class="btn btn-outline-warning btn-sm">
                     <svg class="icon " width="20" height="20"><use href="../assets/svgs/icons.svg#icon-random"></use></svg> Random
                 </a>
-                <a href="../private-keys/sui/2.html" class="btn btn-outline-secondary btn-sm">
-                    Next <svg class="icon " width="20" height="20"><use href="../assets/svgs/icons.svg#icon-next"></use></svg>                </a>
-                <button class="btn btn-outline-secondary btn-sm" onclick="PKF.lastPage()">
-                    Last <svg class="icon " width="20" height="20"><use href="../assets/svgs/icons.svg#icon-last"></use></svg>                </button>
+                <a href="#" id="btn-next" class="btn btn-outline-secondary btn-sm">
+                    Next <svg class="icon " width="20" height="20"><use href="../assets/svgs/icons.svg#icon-next"></use></svg>
+                </a>
+                <a href="#" id="btn-last" class="btn btn-outline-secondary btn-sm">
+                    Last <svg class="icon " width="20" height="20"><use href="../assets/svgs/icons.svg#icon-last"></use></svg>
+                </a>
             </div>
-
             <div class="page-jump">
                 <label>Page:</label>
                 <input type="text" id="pageInput" class="form-control form-control-sm" value="1">
-                <button class="btn btn-primary btn-sm" onclick="PKF.jumpToPage()">
+                <button class="btn btn-primary btn-sm" id="btn-jump">
                     <svg class="icon " width="20" height="20"><use href="../assets/svgs/icons.svg#icon-arrow-right"></use></svg> Jump
                 </button>
             </div>
@@ -495,505 +497,29 @@ header{margin-bottom:1.5rem}
                 <div class="col-balance"><img src="../assets/svgs/chain/sui.svg" width="16" height="16" class="crypto-icon " alt="sui"> SUI Balance</div>
             </div>
             <div id="keysContainer">
-                                <div class="key-row" data-index="0">
-                    <div class="col-key">
-                        <a href="../key/0000000000000000000000000000000000000000000000000000000000000001.html" rel="nofollow" class="private-key key-link">0000000000000000000000000000000000000000000000000000000000000001</a>
-                        <button class="copy-btn" onclick="PKF.copy('0000000000000000000000000000000000000000000000000000000000000001')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="1">
-                    <div class="col-key">
-                        <a href="../key/0000000000000000000000000000000000000000000000000000000000000002.html" rel="nofollow" class="private-key key-link">0000000000000000000000000000000000000000000000000000000000000002</a>
-                        <button class="copy-btn" onclick="PKF.copy('0000000000000000000000000000000000000000000000000000000000000002')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="2">
-                    <div class="col-key">
-                        <a href="../key/0000000000000000000000000000000000000000000000000000000000000003.html" rel="nofollow" class="private-key key-link">0000000000000000000000000000000000000000000000000000000000000003</a>
-                        <button class="copy-btn" onclick="PKF.copy('0000000000000000000000000000000000000000000000000000000000000003')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="3">
-                    <div class="col-key">
-                        <a href="../key/0000000000000000000000000000000000000000000000000000000000000004.html" rel="nofollow" class="private-key key-link">0000000000000000000000000000000000000000000000000000000000000004</a>
-                        <button class="copy-btn" onclick="PKF.copy('0000000000000000000000000000000000000000000000000000000000000004')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="4">
-                    <div class="col-key">
-                        <a href="../key/0000000000000000000000000000000000000000000000000000000000000005.html" rel="nofollow" class="private-key key-link">0000000000000000000000000000000000000000000000000000000000000005</a>
-                        <button class="copy-btn" onclick="PKF.copy('0000000000000000000000000000000000000000000000000000000000000005')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="5">
-                    <div class="col-key">
-                        <a href="../key/0000000000000000000000000000000000000000000000000000000000000006.html" rel="nofollow" class="private-key key-link">0000000000000000000000000000000000000000000000000000000000000006</a>
-                        <button class="copy-btn" onclick="PKF.copy('0000000000000000000000000000000000000000000000000000000000000006')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="6">
-                    <div class="col-key">
-                        <a href="../key/0000000000000000000000000000000000000000000000000000000000000007.html" rel="nofollow" class="private-key key-link">0000000000000000000000000000000000000000000000000000000000000007</a>
-                        <button class="copy-btn" onclick="PKF.copy('0000000000000000000000000000000000000000000000000000000000000007')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="7">
-                    <div class="col-key">
-                        <a href="../key/0000000000000000000000000000000000000000000000000000000000000008.html" rel="nofollow" class="private-key key-link">0000000000000000000000000000000000000000000000000000000000000008</a>
-                        <button class="copy-btn" onclick="PKF.copy('0000000000000000000000000000000000000000000000000000000000000008')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="8">
-                    <div class="col-key">
-                        <a href="../key/0000000000000000000000000000000000000000000000000000000000000009.html" rel="nofollow" class="private-key key-link">0000000000000000000000000000000000000000000000000000000000000009</a>
-                        <button class="copy-btn" onclick="PKF.copy('0000000000000000000000000000000000000000000000000000000000000009')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="9">
-                    <div class="col-key">
-                        <a href="../key/000000000000000000000000000000000000000000000000000000000000000a.html" rel="nofollow" class="private-key key-link">000000000000000000000000000000000000000000000000000000000000000a</a>
-                        <button class="copy-btn" onclick="PKF.copy('000000000000000000000000000000000000000000000000000000000000000a')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="10">
-                    <div class="col-key">
-                        <a href="../key/000000000000000000000000000000000000000000000000000000000000000b.html" rel="nofollow" class="private-key key-link">000000000000000000000000000000000000000000000000000000000000000b</a>
-                        <button class="copy-btn" onclick="PKF.copy('000000000000000000000000000000000000000000000000000000000000000b')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="11">
-                    <div class="col-key">
-                        <a href="../key/000000000000000000000000000000000000000000000000000000000000000c.html" rel="nofollow" class="private-key key-link">000000000000000000000000000000000000000000000000000000000000000c</a>
-                        <button class="copy-btn" onclick="PKF.copy('000000000000000000000000000000000000000000000000000000000000000c')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="12">
-                    <div class="col-key">
-                        <a href="../key/000000000000000000000000000000000000000000000000000000000000000d.html" rel="nofollow" class="private-key key-link">000000000000000000000000000000000000000000000000000000000000000d</a>
-                        <button class="copy-btn" onclick="PKF.copy('000000000000000000000000000000000000000000000000000000000000000d')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="13">
-                    <div class="col-key">
-                        <a href="../key/000000000000000000000000000000000000000000000000000000000000000e.html" rel="nofollow" class="private-key key-link">000000000000000000000000000000000000000000000000000000000000000e</a>
-                        <button class="copy-btn" onclick="PKF.copy('000000000000000000000000000000000000000000000000000000000000000e')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="14">
-                    <div class="col-key">
-                        <a href="../key/000000000000000000000000000000000000000000000000000000000000000f.html" rel="nofollow" class="private-key key-link">000000000000000000000000000000000000000000000000000000000000000f</a>
-                        <button class="copy-btn" onclick="PKF.copy('000000000000000000000000000000000000000000000000000000000000000f')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="15">
-                    <div class="col-key">
-                        <a href="../key/0000000000000000000000000000000000000000000000000000000000000010.html" rel="nofollow" class="private-key key-link">0000000000000000000000000000000000000000000000000000000000000010</a>
-                        <button class="copy-btn" onclick="PKF.copy('0000000000000000000000000000000000000000000000000000000000000010')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="16">
-                    <div class="col-key">
-                        <a href="../key/0000000000000000000000000000000000000000000000000000000000000011.html" rel="nofollow" class="private-key key-link">0000000000000000000000000000000000000000000000000000000000000011</a>
-                        <button class="copy-btn" onclick="PKF.copy('0000000000000000000000000000000000000000000000000000000000000011')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="17">
-                    <div class="col-key">
-                        <a href="../key/0000000000000000000000000000000000000000000000000000000000000012.html" rel="nofollow" class="private-key key-link">0000000000000000000000000000000000000000000000000000000000000012</a>
-                        <button class="copy-btn" onclick="PKF.copy('0000000000000000000000000000000000000000000000000000000000000012')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="18">
-                    <div class="col-key">
-                        <a href="../key/0000000000000000000000000000000000000000000000000000000000000013.html" rel="nofollow" class="private-key key-link">0000000000000000000000000000000000000000000000000000000000000013</a>
-                        <button class="copy-btn" onclick="PKF.copy('0000000000000000000000000000000000000000000000000000000000000013')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="19">
-                    <div class="col-key">
-                        <a href="../key/0000000000000000000000000000000000000000000000000000000000000014.html" rel="nofollow" class="private-key key-link">0000000000000000000000000000000000000000000000000000000000000014</a>
-                        <button class="copy-btn" onclick="PKF.copy('0000000000000000000000000000000000000000000000000000000000000014')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="20">
-                    <div class="col-key">
-                        <a href="../key/0000000000000000000000000000000000000000000000000000000000000015.html" rel="nofollow" class="private-key key-link">0000000000000000000000000000000000000000000000000000000000000015</a>
-                        <button class="copy-btn" onclick="PKF.copy('0000000000000000000000000000000000000000000000000000000000000015')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="21">
-                    <div class="col-key">
-                        <a href="../key/0000000000000000000000000000000000000000000000000000000000000016.html" rel="nofollow" class="private-key key-link">0000000000000000000000000000000000000000000000000000000000000016</a>
-                        <button class="copy-btn" onclick="PKF.copy('0000000000000000000000000000000000000000000000000000000000000016')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="22">
-                    <div class="col-key">
-                        <a href="../key/0000000000000000000000000000000000000000000000000000000000000017.html" rel="nofollow" class="private-key key-link">0000000000000000000000000000000000000000000000000000000000000017</a>
-                        <button class="copy-btn" onclick="PKF.copy('0000000000000000000000000000000000000000000000000000000000000017')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="23">
-                    <div class="col-key">
-                        <a href="../key/0000000000000000000000000000000000000000000000000000000000000018.html" rel="nofollow" class="private-key key-link">0000000000000000000000000000000000000000000000000000000000000018</a>
-                        <button class="copy-btn" onclick="PKF.copy('0000000000000000000000000000000000000000000000000000000000000018')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="24">
-                    <div class="col-key">
-                        <a href="../key/0000000000000000000000000000000000000000000000000000000000000019.html" rel="nofollow" class="private-key key-link">0000000000000000000000000000000000000000000000000000000000000019</a>
-                        <button class="copy-btn" onclick="PKF.copy('0000000000000000000000000000000000000000000000000000000000000019')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="25">
-                    <div class="col-key">
-                        <a href="../key/000000000000000000000000000000000000000000000000000000000000001a.html" rel="nofollow" class="private-key key-link">000000000000000000000000000000000000000000000000000000000000001a</a>
-                        <button class="copy-btn" onclick="PKF.copy('000000000000000000000000000000000000000000000000000000000000001a')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="26">
-                    <div class="col-key">
-                        <a href="../key/000000000000000000000000000000000000000000000000000000000000001b.html" rel="nofollow" class="private-key key-link">000000000000000000000000000000000000000000000000000000000000001b</a>
-                        <button class="copy-btn" onclick="PKF.copy('000000000000000000000000000000000000000000000000000000000000001b')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="27">
-                    <div class="col-key">
-                        <a href="../key/000000000000000000000000000000000000000000000000000000000000001c.html" rel="nofollow" class="private-key key-link">000000000000000000000000000000000000000000000000000000000000001c</a>
-                        <button class="copy-btn" onclick="PKF.copy('000000000000000000000000000000000000000000000000000000000000001c')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="28">
-                    <div class="col-key">
-                        <a href="../key/000000000000000000000000000000000000000000000000000000000000001d.html" rel="nofollow" class="private-key key-link">000000000000000000000000000000000000000000000000000000000000001d</a>
-                        <button class="copy-btn" onclick="PKF.copy('000000000000000000000000000000000000000000000000000000000000001d')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="29">
-                    <div class="col-key">
-                        <a href="../key/000000000000000000000000000000000000000000000000000000000000001e.html" rel="nofollow" class="private-key key-link">000000000000000000000000000000000000000000000000000000000000001e</a>
-                        <button class="copy-btn" onclick="PKF.copy('000000000000000000000000000000000000000000000000000000000000001e')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="30">
-                    <div class="col-key">
-                        <a href="../key/000000000000000000000000000000000000000000000000000000000000001f.html" rel="nofollow" class="private-key key-link">000000000000000000000000000000000000000000000000000000000000001f</a>
-                        <button class="copy-btn" onclick="PKF.copy('000000000000000000000000000000000000000000000000000000000000001f')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="31">
-                    <div class="col-key">
-                        <a href="../key/0000000000000000000000000000000000000000000000000000000000000020.html" rel="nofollow" class="private-key key-link">0000000000000000000000000000000000000000000000000000000000000020</a>
-                        <button class="copy-btn" onclick="PKF.copy('0000000000000000000000000000000000000000000000000000000000000020')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="32">
-                    <div class="col-key">
-                        <a href="../key/0000000000000000000000000000000000000000000000000000000000000021.html" rel="nofollow" class="private-key key-link">0000000000000000000000000000000000000000000000000000000000000021</a>
-                        <button class="copy-btn" onclick="PKF.copy('0000000000000000000000000000000000000000000000000000000000000021')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="33">
-                    <div class="col-key">
-                        <a href="../key/0000000000000000000000000000000000000000000000000000000000000022.html" rel="nofollow" class="private-key key-link">0000000000000000000000000000000000000000000000000000000000000022</a>
-                        <button class="copy-btn" onclick="PKF.copy('0000000000000000000000000000000000000000000000000000000000000022')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="34">
-                    <div class="col-key">
-                        <a href="../key/0000000000000000000000000000000000000000000000000000000000000023.html" rel="nofollow" class="private-key key-link">0000000000000000000000000000000000000000000000000000000000000023</a>
-                        <button class="copy-btn" onclick="PKF.copy('0000000000000000000000000000000000000000000000000000000000000023')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="35">
-                    <div class="col-key">
-                        <a href="../key/0000000000000000000000000000000000000000000000000000000000000024.html" rel="nofollow" class="private-key key-link">0000000000000000000000000000000000000000000000000000000000000024</a>
-                        <button class="copy-btn" onclick="PKF.copy('0000000000000000000000000000000000000000000000000000000000000024')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="36">
-                    <div class="col-key">
-                        <a href="../key/0000000000000000000000000000000000000000000000000000000000000025.html" rel="nofollow" class="private-key key-link">0000000000000000000000000000000000000000000000000000000000000025</a>
-                        <button class="copy-btn" onclick="PKF.copy('0000000000000000000000000000000000000000000000000000000000000025')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="37">
-                    <div class="col-key">
-                        <a href="../key/0000000000000000000000000000000000000000000000000000000000000026.html" rel="nofollow" class="private-key key-link">0000000000000000000000000000000000000000000000000000000000000026</a>
-                        <button class="copy-btn" onclick="PKF.copy('0000000000000000000000000000000000000000000000000000000000000026')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="38">
-                    <div class="col-key">
-                        <a href="../key/0000000000000000000000000000000000000000000000000000000000000027.html" rel="nofollow" class="private-key key-link">0000000000000000000000000000000000000000000000000000000000000027</a>
-                        <button class="copy-btn" onclick="PKF.copy('0000000000000000000000000000000000000000000000000000000000000027')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="39">
-                    <div class="col-key">
-                        <a href="../key/0000000000000000000000000000000000000000000000000000000000000028.html" rel="nofollow" class="private-key key-link">0000000000000000000000000000000000000000000000000000000000000028</a>
-                        <button class="copy-btn" onclick="PKF.copy('0000000000000000000000000000000000000000000000000000000000000028')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="40">
-                    <div class="col-key">
-                        <a href="../key/0000000000000000000000000000000000000000000000000000000000000029.html" rel="nofollow" class="private-key key-link">0000000000000000000000000000000000000000000000000000000000000029</a>
-                        <button class="copy-btn" onclick="PKF.copy('0000000000000000000000000000000000000000000000000000000000000029')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="41">
-                    <div class="col-key">
-                        <a href="../key/000000000000000000000000000000000000000000000000000000000000002a.html" rel="nofollow" class="private-key key-link">000000000000000000000000000000000000000000000000000000000000002a</a>
-                        <button class="copy-btn" onclick="PKF.copy('000000000000000000000000000000000000000000000000000000000000002a')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="42">
-                    <div class="col-key">
-                        <a href="../key/000000000000000000000000000000000000000000000000000000000000002b.html" rel="nofollow" class="private-key key-link">000000000000000000000000000000000000000000000000000000000000002b</a>
-                        <button class="copy-btn" onclick="PKF.copy('000000000000000000000000000000000000000000000000000000000000002b')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="43">
-                    <div class="col-key">
-                        <a href="../key/000000000000000000000000000000000000000000000000000000000000002c.html" rel="nofollow" class="private-key key-link">000000000000000000000000000000000000000000000000000000000000002c</a>
-                        <button class="copy-btn" onclick="PKF.copy('000000000000000000000000000000000000000000000000000000000000002c')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="44">
-                    <div class="col-key">
-                        <a href="../key/000000000000000000000000000000000000000000000000000000000000002d.html" rel="nofollow" class="private-key key-link">000000000000000000000000000000000000000000000000000000000000002d</a>
-                        <button class="copy-btn" onclick="PKF.copy('000000000000000000000000000000000000000000000000000000000000002d')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="45">
-                    <div class="col-key">
-                        <a href="../key/000000000000000000000000000000000000000000000000000000000000002e.html" rel="nofollow" class="private-key key-link">000000000000000000000000000000000000000000000000000000000000002e</a>
-                        <button class="copy-btn" onclick="PKF.copy('000000000000000000000000000000000000000000000000000000000000002e')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="46">
-                    <div class="col-key">
-                        <a href="../key/000000000000000000000000000000000000000000000000000000000000002f.html" rel="nofollow" class="private-key key-link">000000000000000000000000000000000000000000000000000000000000002f</a>
-                        <button class="copy-btn" onclick="PKF.copy('000000000000000000000000000000000000000000000000000000000000002f')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="47">
-                    <div class="col-key">
-                        <a href="../key/0000000000000000000000000000000000000000000000000000000000000030.html" rel="nofollow" class="private-key key-link">0000000000000000000000000000000000000000000000000000000000000030</a>
-                        <button class="copy-btn" onclick="PKF.copy('0000000000000000000000000000000000000000000000000000000000000030')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="48">
-                    <div class="col-key">
-                        <a href="../key/0000000000000000000000000000000000000000000000000000000000000031.html" rel="nofollow" class="private-key key-link">0000000000000000000000000000000000000000000000000000000000000031</a>
-                        <button class="copy-btn" onclick="PKF.copy('0000000000000000000000000000000000000000000000000000000000000031')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="49">
-                    <div class="col-key">
-                        <a href="../key/0000000000000000000000000000000000000000000000000000000000000032.html" rel="nofollow" class="private-key key-link">0000000000000000000000000000000000000000000000000000000000000032</a>
-                        <button class="copy-btn" onclick="PKF.copy('0000000000000000000000000000000000000000000000000000000000000032')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="50">
-                    <div class="col-key">
-                        <a href="../key/0000000000000000000000000000000000000000000000000000000000000033.html" rel="nofollow" class="private-key key-link">0000000000000000000000000000000000000000000000000000000000000033</a>
-                        <button class="copy-btn" onclick="PKF.copy('0000000000000000000000000000000000000000000000000000000000000033')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="51">
-                    <div class="col-key">
-                        <a href="../key/0000000000000000000000000000000000000000000000000000000000000034.html" rel="nofollow" class="private-key key-link">0000000000000000000000000000000000000000000000000000000000000034</a>
-                        <button class="copy-btn" onclick="PKF.copy('0000000000000000000000000000000000000000000000000000000000000034')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="52">
-                    <div class="col-key">
-                        <a href="../key/0000000000000000000000000000000000000000000000000000000000000035.html" rel="nofollow" class="private-key key-link">0000000000000000000000000000000000000000000000000000000000000035</a>
-                        <button class="copy-btn" onclick="PKF.copy('0000000000000000000000000000000000000000000000000000000000000035')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="53">
-                    <div class="col-key">
-                        <a href="../key/0000000000000000000000000000000000000000000000000000000000000036.html" rel="nofollow" class="private-key key-link">0000000000000000000000000000000000000000000000000000000000000036</a>
-                        <button class="copy-btn" onclick="PKF.copy('0000000000000000000000000000000000000000000000000000000000000036')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="54">
-                    <div class="col-key">
-                        <a href="../key/0000000000000000000000000000000000000000000000000000000000000037.html" rel="nofollow" class="private-key key-link">0000000000000000000000000000000000000000000000000000000000000037</a>
-                        <button class="copy-btn" onclick="PKF.copy('0000000000000000000000000000000000000000000000000000000000000037')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="55">
-                    <div class="col-key">
-                        <a href="../key/0000000000000000000000000000000000000000000000000000000000000038.html" rel="nofollow" class="private-key key-link">0000000000000000000000000000000000000000000000000000000000000038</a>
-                        <button class="copy-btn" onclick="PKF.copy('0000000000000000000000000000000000000000000000000000000000000038')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="56">
-                    <div class="col-key">
-                        <a href="../key/0000000000000000000000000000000000000000000000000000000000000039.html" rel="nofollow" class="private-key key-link">0000000000000000000000000000000000000000000000000000000000000039</a>
-                        <button class="copy-btn" onclick="PKF.copy('0000000000000000000000000000000000000000000000000000000000000039')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="57">
-                    <div class="col-key">
-                        <a href="../key/000000000000000000000000000000000000000000000000000000000000003a.html" rel="nofollow" class="private-key key-link">000000000000000000000000000000000000000000000000000000000000003a</a>
-                        <button class="copy-btn" onclick="PKF.copy('000000000000000000000000000000000000000000000000000000000000003a')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="58">
-                    <div class="col-key">
-                        <a href="../key/000000000000000000000000000000000000000000000000000000000000003b.html" rel="nofollow" class="private-key key-link">000000000000000000000000000000000000000000000000000000000000003b</a>
-                        <button class="copy-btn" onclick="PKF.copy('000000000000000000000000000000000000000000000000000000000000003b')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                                <div class="key-row" data-index="59">
-                    <div class="col-key">
-                        <a href="../key/000000000000000000000000000000000000000000000000000000000000003c.html" rel="nofollow" class="private-key key-link">000000000000000000000000000000000000000000000000000000000000003c</a>
-                        <button class="copy-btn" onclick="PKF.copy('000000000000000000000000000000000000000000000000000000000000003c')" title="Copy"><img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt=""></button>
-                    </div>
-                    <div class="col-address"><span class="text-muted">Calculating...</span></div>
-                    <div class="col-balance">-</div>
-                </div>
-                            </div>
+                <!-- Keys generated dynamically by JS engine -->
+            </div>
         </div>
 
         <!-- Bottom Navigation -->
+                <!-- Bottom Navigation -->
         <div class="nav-bar mt-3">
             <div class="nav-buttons">
-                <a href="./sui.html" class="btn btn-outline-secondary btn-sm">
+                <a href="#" id="btn-first-bottom" class="btn btn-outline-secondary btn-sm">
                     <svg class="icon " width="20" height="20"><use href="../assets/svgs/icons.svg#icon-first"></use></svg> First
                 </a>
-                <a href="./sui.html" class="btn btn-outline-secondary btn-sm">
+                <a href="#" id="btn-prev-bottom" class="btn btn-outline-secondary btn-sm">
                     <svg class="icon " width="20" height="20"><use href="../assets/svgs/icons.svg#icon-prev"></use></svg> Previous
                 </a>
-                <a href="../private-keys/sui/481411542891110232306426196034871698092578352267334514899824487603727854787.html" class="btn btn-outline-warning btn-sm" id="randomPageBtn">
+                <a href="#" id="btn-random-bottom" class="btn btn-outline-warning btn-sm">
                     <svg class="icon " width="20" height="20"><use href="../assets/svgs/icons.svg#icon-random"></use></svg> Random
                 </a>
-                <a href="../private-keys/sui/2.html" class="btn btn-outline-secondary btn-sm">
-                    Next <svg class="icon " width="20" height="20"><use href="../assets/svgs/icons.svg#icon-next"></use></svg>                </a>
-                <button class="btn btn-outline-secondary btn-sm" onclick="PKF.lastPage()">
-                    Last <svg class="icon " width="20" height="20"><use href="../assets/svgs/icons.svg#icon-last"></use></svg>                </button>
+                <a href="#" id="btn-next-bottom" class="btn btn-outline-secondary btn-sm">
+                    Next <svg class="icon " width="20" height="20"><use href="../assets/svgs/icons.svg#icon-next"></use></svg>
+                </a>
+                <a href="#" id="btn-last-bottom" class="btn btn-outline-secondary btn-sm">
+                    Last <svg class="icon " width="20" height="20"><use href="../assets/svgs/icons.svg#icon-last"></use></svg>
+                </a>
             </div>
         </div>
 
@@ -1215,6 +741,219 @@ header{margin-bottom:1.5rem}
 
     <!-- ========== SCRIPTS ========== -->
     
+    <!-- ===== PKF DYNAMIC KEY ENGINE (Universal) ===== -->
+    <script>
+    (function() {
+        'use strict';
+
+        var KEYS_PER_PAGE = 128;
+        // secp256k1 / Ed25519 max private key (valid for all supported chains)
+        var MAX_KEY = BigInt('0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364140');
+        var MIN_KEY = BigInt(1);
+
+        // Auto-detect base URL from current page filename
+        var BASE_URL = './' + window.location.pathname.split('/').pop().split('?')[0];
+        if (!BASE_URL || BASE_URL === './') BASE_URL = './bitcoin.html';
+
+        // ---- Helpers ----
+        function toHex64(n) {
+            return n.toString(16).padStart(64, '0');
+        }
+
+        function getStartKeyFromURL() {
+            var params = new URLSearchParams(window.location.search);
+            var keyParam = params.get('key');
+            if (!keyParam) return MIN_KEY;
+            try {
+                var n = BigInt('0x' + keyParam.replace(/^0x/i, ''));
+                if (n < MIN_KEY) return MIN_KEY;
+                if (n > MAX_KEY) return MAX_KEY;
+                return n;
+            } catch(e) {
+                return MIN_KEY;
+            }
+        }
+
+        function makePageUrl(startKey) {
+            if (startKey <= MIN_KEY) return BASE_URL;
+            return BASE_URL + '?key=' + toHex64(startKey);
+        }
+
+        // TRUE RANDOM: full 256-bit range, new key on every call
+        window.PKF_GetRandomPageUrl = function() {
+            var arr = new Uint8Array(32);
+            crypto.getRandomValues(arr);
+            var hex = Array.from(arr).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
+            var n = BigInt('0x' + hex);
+            var range = MAX_KEY - MIN_KEY;
+            n = (n % range) + MIN_KEY;
+            // Align to page start: pageStart = floor((n-1) / 128) * 128 + 1
+            var pn = BigInt(KEYS_PER_PAGE);
+            var pageStart = ((n - MIN_KEY) / pn) * pn + MIN_KEY;
+            if (pageStart < MIN_KEY) pageStart = MIN_KEY;
+            if (pageStart > MAX_KEY) pageStart = MAX_KEY;
+            return makePageUrl(pageStart);
+        };
+
+        function getPageNumber(startKey) {
+            // Returns BigInt page number (no Number conversion = no precision loss)
+            return (startKey - MIN_KEY) / BigInt(KEYS_PER_PAGE) + BigInt(1);
+        }
+
+        // ---- Render 128 Keys Dynamically ----
+        function renderKeys(startKey) {
+            var container = document.getElementById('keysContainer');
+            if (!container) return;
+            var html = '';
+            for (var i = 0; i < KEYS_PER_PAGE; i++) {
+                var k = startKey + BigInt(i);
+                if (k > MAX_KEY) break;
+                var hexKey = toHex64(k);
+                html += '<div class="key-row" data-index="' + i + '">';
+                html += '<div class="col-key">';
+                html += '<a href="../key/' + hexKey + '.html" rel="nofollow" class="private-key key-link">' + hexKey + '</a>';
+                html += '<button class="copy-btn" onclick="PKF.copy(\'' + hexKey + '\')" title="Copy">';
+                html += '<img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt="">';
+                html += '</button></div>';
+                html += '<div class="col-address"><span class="text-muted">Calculating...</span></div>';
+                html += '<div class="col-balance">-</div>';
+                html += '</div>';
+            }
+            container.innerHTML = html;
+        }
+
+        // ---- Update Navigation Buttons ----
+        function updateNavButtons(startKey) {
+            var pn = BigInt(KEYS_PER_PAGE);
+            var prevKey = startKey - pn;
+            var nextKey = startKey + pn;
+            var lastPageStart = ((MAX_KEY - MIN_KEY) / pn) * pn + MIN_KEY;
+
+            var firstUrl = BASE_URL;
+            var prevUrl  = prevKey >= MIN_KEY ? makePageUrl(prevKey) : BASE_URL;
+            var nextUrl  = nextKey <= MAX_KEY ? makePageUrl(nextKey) : makePageUrl(lastPageStart);
+            var lastUrl  = makePageUrl(lastPageStart);
+
+            // Static nav links
+            var navMap = {
+                'btn-first': firstUrl, 'btn-first-bottom': firstUrl,
+                'btn-prev':  prevUrl,  'btn-prev-bottom':  prevUrl,
+                'btn-next':  nextUrl,  'btn-next-bottom':  nextUrl,
+                'btn-last':  lastUrl,  'btn-last-bottom':  lastUrl
+            };
+            Object.keys(navMap).forEach(function(id) {
+                var el = document.getElementById(id);
+                if (el) el.href = navMap[id];
+            });
+
+            // Random: onclick = generate fresh random each time
+            ['btn-random', 'btn-random-bottom'].forEach(function(id) {
+                var el = document.getElementById(id);
+                if (!el) return;
+                el.removeAttribute('href');
+                el.onclick = function(e) {
+                    e.preventDefault();
+                    window.location.href = window.PKF_GetRandomPageUrl();
+                };
+                el.style.cursor = 'pointer';
+            });
+
+            // Disable prev on first page
+            ['btn-prev','btn-prev-bottom'].forEach(function(id) {
+                var el = document.getElementById(id);
+                if (!el) return;
+                if (startKey <= MIN_KEY) {
+                    el.style.opacity = '0.4';
+                    el.style.pointerEvents = 'none';
+                } else {
+                    el.style.opacity = '';
+                    el.style.pointerEvents = '';
+                }
+            });
+        }
+
+        // ---- Update Page Info ----
+        function updatePageInfo(startKey) {
+            var pageNum = getPageNumber(startKey); // BigInt
+
+            // Format BigInt with commas (no precision loss)
+            function formatBigInt(n) {
+                var s = n.toString();
+                return s.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            }
+
+            var pageNumEl = document.getElementById('pkf-page-num');
+            if (pageNumEl) pageNumEl.textContent = '#' + formatBigInt(pageNum);
+
+            // Progress bar: approximate % as float using first 18 digits
+            var keyStr = startKey.toString();
+            var maxStr = MAX_KEY.toString();
+            var pct = 0;
+            try {
+                // Compare leading digits for approximation
+                var ratio = Number(BigInt(keyStr.substring(0, 18)) * BigInt(100000000)) /
+                            Number(BigInt(maxStr.substring(0, 18)) * BigInt(100000000));
+                pct = Math.min(ratio * 100, 100);
+            } catch(e) { pct = 0; }
+
+            var bar = document.getElementById('pkf-progress-bar');
+            var txt = document.getElementById('pkf-progress-text');
+            if (bar) bar.style.width = Math.max(pct, 0.00001) + '%';
+            if (txt) txt.textContent = pct.toFixed(8) + '%';
+
+            // Update page input
+            var input = document.getElementById('pageInput');
+            if (input) {
+                try { input.value = pageNum.toString(); } catch(e) {}
+            }
+
+            // Update PKF_CONFIG
+            if (window.PKF_CONFIG) {
+                window.PKF_CONFIG.page = pageNum.toString();
+                window.PKF_CONFIG.startKey = toHex64(startKey);
+            }
+        }
+
+        // ---- Jump to page ----
+        function setupJump() {
+            var jumpBtn = document.getElementById('btn-jump');
+            var input   = document.getElementById('pageInput');
+            if (!jumpBtn || !input) return;
+            function doJump() {
+                var raw = input.value.replace(/,/g, '').trim();
+                var page;
+                try { page = BigInt(raw); } catch(e) { page = BigInt(1); }
+                if (page < BigInt(1)) page = BigInt(1);
+                var pn = BigInt(KEYS_PER_PAGE);
+                var startKey = MIN_KEY + (page - BigInt(1)) * pn;
+                if (startKey > MAX_KEY) startKey = ((MAX_KEY - MIN_KEY) / pn) * pn + MIN_KEY;
+                window.location.href = makePageUrl(startKey);
+            }
+            jumpBtn.addEventListener('click', doJump);
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') doJump();
+            });
+        }
+
+        // ---- Main Init ----
+        function init() {
+            var startKey = getStartKeyFromURL();
+            renderKeys(startKey);
+            updateNavButtons(startKey);
+            updatePageInfo(startKey);
+            setupJump();
+            window.PKF_ENGINE = { startKey: startKey, keysPerPage: KEYS_PER_PAGE, toHex64: toHex64 };
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    })();
+    </script>
+    <!-- ===== END PKF DYNAMIC KEY ENGINE ===== -->
+
     <!-- Page Config (must be first) -->
     <script>
         window.PKF_CONFIG = {

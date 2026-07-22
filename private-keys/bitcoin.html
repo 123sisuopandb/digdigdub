@@ -426,6 +426,7 @@ header{margin-bottom:1.5rem}
         </div>
 
         <!-- Navigation Bar -->
+                <!-- Navigation Bar -->
         <div class="nav-bar">
             <div class="nav-buttons">
                 <a href="#" id="btn-first" class="btn btn-outline-secondary btn-sm">
@@ -444,7 +445,6 @@ header{margin-bottom:1.5rem}
                     Last <svg class="icon " width="20" height="20"><use href="../assets/svgs/icons.svg#icon-last"></use></svg>
                 </a>
             </div>
-
             <div class="page-jump">
                 <label>Page:</label>
                 <input type="text" id="pageInput" class="form-control form-control-sm" value="1">
@@ -542,11 +542,12 @@ header{margin-bottom:1.5rem}
                 <div class="col-balance"><img src="../assets/svgs/chain/bitcoin.svg" width="16" height="16" class="crypto-icon " alt="bitcoin"> BTC Balance</div>
             </div>
             <div id="keysContainer">
-                <!-- Keys generated dynamically by JS engine below -->
+                <!-- Keys generated dynamically by JS engine -->
             </div>
         </div>
 
         <!-- Bottom Navigation -->
+                <!-- Bottom Navigation -->
         <div class="nav-bar mt-3">
             <div class="nav-buttons">
                 <a href="#" id="btn-first-bottom" class="btn btn-outline-secondary btn-sm">
@@ -785,17 +786,19 @@ header{margin-bottom:1.5rem}
 
     <!-- ========== SCRIPTS ========== -->
 
-    <!-- ===== PKF DYNAMIC KEY ENGINE ===== -->
+        <!-- ===== PKF DYNAMIC KEY ENGINE (Universal) ===== -->
     <script>
     (function() {
         'use strict';
 
-        // ---- Constants ----
         var KEYS_PER_PAGE = 128;
-        // secp256k1 curve order - 1 (max valid private key)
+        // secp256k1 / Ed25519 max private key (valid for all supported chains)
         var MAX_KEY = BigInt('0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364140');
         var MIN_KEY = BigInt(1);
-        var BASE_URL = './bitcoin.html';
+
+        // Auto-detect base URL from current page filename
+        var BASE_URL = './' + window.location.pathname.split('/').pop().split('?')[0];
+        if (!BASE_URL || BASE_URL === './') BASE_URL = './bitcoin.html';
 
         // ---- Helpers ----
         function toHex64(n) {
@@ -821,32 +824,28 @@ header{margin-bottom:1.5rem}
             return BASE_URL + '?key=' + toHex64(startKey);
         }
 
-        function getRandomKey() {
-            // Generate cryptographically random 256-bit key within valid range
+        // TRUE RANDOM: full 256-bit range, new key on every call
+        window.PKF_GetRandomPageUrl = function() {
             var arr = new Uint8Array(32);
             crypto.getRandomValues(arr);
             var hex = Array.from(arr).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
             var n = BigInt('0x' + hex);
-            // clamp to valid range
             var range = MAX_KEY - MIN_KEY;
             n = (n % range) + MIN_KEY;
-            // Align to page boundary
+            // Align to page start: pageStart = floor((n-1) / 128) * 128 + 1
             var pn = BigInt(KEYS_PER_PAGE);
-            n = (n / pn) * pn + MIN_KEY;
-            if (n < MIN_KEY) n = MIN_KEY;
-            if (n > MAX_KEY) n = MAX_KEY - pn + MIN_KEY;
-            return n;
-        }
+            var pageStart = ((n - MIN_KEY) / pn) * pn + MIN_KEY;
+            if (pageStart < MIN_KEY) pageStart = MIN_KEY;
+            if (pageStart > MAX_KEY) pageStart = MAX_KEY;
+            return makePageUrl(pageStart);
+        };
 
         function getPageNumber(startKey) {
-            return Number((startKey - MIN_KEY) / BigInt(KEYS_PER_PAGE)) + 1;
+            // Returns BigInt page number (no Number conversion = no precision loss)
+            return (startKey - MIN_KEY) / BigInt(KEYS_PER_PAGE) + BigInt(1);
         }
 
-        function getTotalPages() {
-            return Number((MAX_KEY - MIN_KEY) / BigInt(KEYS_PER_PAGE)) + 1;
-        }
-
-        // ---- Render Keys ----
+        // ---- Render 128 Keys Dynamically ----
         function renderKeys(startKey) {
             var container = document.getElementById('keysContainer');
             if (!container) return;
@@ -879,20 +878,29 @@ header{margin-bottom:1.5rem}
             var prevUrl  = prevKey >= MIN_KEY ? makePageUrl(prevKey) : BASE_URL;
             var nextUrl  = nextKey <= MAX_KEY ? makePageUrl(nextKey) : makePageUrl(lastPageStart);
             var lastUrl  = makePageUrl(lastPageStart);
-            var randUrl  = makePageUrl(getRandomKey());
 
-            var ids = ['btn-first','btn-prev','btn-next','btn-last','btn-random',
-                       'btn-first-bottom','btn-prev-bottom','btn-next-bottom','btn-last-bottom','btn-random-bottom'];
-            var map = {
+            // Static nav links
+            var navMap = {
                 'btn-first': firstUrl, 'btn-first-bottom': firstUrl,
                 'btn-prev':  prevUrl,  'btn-prev-bottom':  prevUrl,
                 'btn-next':  nextUrl,  'btn-next-bottom':  nextUrl,
-                'btn-last':  lastUrl,  'btn-last-bottom':  lastUrl,
-                'btn-random':randUrl,  'btn-random-bottom':randUrl
+                'btn-last':  lastUrl,  'btn-last-bottom':  lastUrl
             };
-            ids.forEach(function(id) {
+            Object.keys(navMap).forEach(function(id) {
                 var el = document.getElementById(id);
-                if (el) el.href = map[id];
+                if (el) el.href = navMap[id];
+            });
+
+            // Random: onclick = generate fresh random each time
+            ['btn-random', 'btn-random-bottom'].forEach(function(id) {
+                var el = document.getElementById(id);
+                if (!el) return;
+                el.removeAttribute('href');
+                el.onclick = function(e) {
+                    e.preventDefault();
+                    window.location.href = window.PKF_GetRandomPageUrl();
+                };
+                el.style.cursor = 'pointer';
             });
 
             // Disable prev on first page
@@ -911,25 +919,42 @@ header{margin-bottom:1.5rem}
 
         // ---- Update Page Info ----
         function updatePageInfo(startKey) {
-            var pageNum = getPageNumber(startKey);
-            var totalPages = getTotalPages();
+            var pageNum = getPageNumber(startKey); // BigInt
+
+            // Format BigInt with commas (no precision loss)
+            function formatBigInt(n) {
+                var s = n.toString();
+                return s.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            }
 
             var pageNumEl = document.getElementById('pkf-page-num');
-            if (pageNumEl) pageNumEl.textContent = '#' + pageNum.toLocaleString();
+            if (pageNumEl) pageNumEl.textContent = '#' + formatBigInt(pageNum);
 
-            var pct = (Number(startKey) / Number(MAX_KEY)) * 100;
+            // Progress bar: approximate % as float using first 18 digits
+            var keyStr = startKey.toString();
+            var maxStr = MAX_KEY.toString();
+            var pct = 0;
+            try {
+                // Compare leading digits for approximation
+                var ratio = Number(BigInt(keyStr.substring(0, 18)) * BigInt(100000000)) /
+                            Number(BigInt(maxStr.substring(0, 18)) * BigInt(100000000));
+                pct = Math.min(ratio * 100, 100);
+            } catch(e) { pct = 0; }
+
             var bar = document.getElementById('pkf-progress-bar');
             var txt = document.getElementById('pkf-progress-text');
-            if (bar) bar.style.width = Math.max(pct, 0.0001) + '%';
+            if (bar) bar.style.width = Math.max(pct, 0.00001) + '%';
             if (txt) txt.textContent = pct.toFixed(8) + '%';
 
             // Update page input
             var input = document.getElementById('pageInput');
-            if (input) input.value = pageNum;
+            if (input) {
+                try { input.value = pageNum.toString(); } catch(e) {}
+            }
 
-            // Update PKF_CONFIG page so app.obf.js knows current page
+            // Update PKF_CONFIG
             if (window.PKF_CONFIG) {
-                window.PKF_CONFIG.page = String(pageNum);
+                window.PKF_CONFIG.page = pageNum.toString();
                 window.PKF_CONFIG.startKey = toHex64(startKey);
             }
         }
@@ -939,16 +964,19 @@ header{margin-bottom:1.5rem}
             var jumpBtn = document.getElementById('btn-jump');
             var input   = document.getElementById('pageInput');
             if (!jumpBtn || !input) return;
-            jumpBtn.addEventListener('click', function() {
-                var page = parseInt(input.value, 10);
-                if (isNaN(page) || page < 1) page = 1;
+            function doJump() {
+                var raw = input.value.replace(/,/g, '').trim();
+                var page;
+                try { page = BigInt(raw); } catch(e) { page = BigInt(1); }
+                if (page < BigInt(1)) page = BigInt(1);
                 var pn = BigInt(KEYS_PER_PAGE);
-                var startKey = MIN_KEY + (BigInt(page - 1) * pn);
+                var startKey = MIN_KEY + (page - BigInt(1)) * pn;
                 if (startKey > MAX_KEY) startKey = ((MAX_KEY - MIN_KEY) / pn) * pn + MIN_KEY;
                 window.location.href = makePageUrl(startKey);
-            });
+            }
+            jumpBtn.addEventListener('click', doJump);
             input.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') jumpBtn.click();
+                if (e.key === 'Enter') doJump();
             });
         }
 
@@ -959,16 +987,9 @@ header{margin-bottom:1.5rem}
             updateNavButtons(startKey);
             updatePageInfo(startKey);
             setupJump();
-
-            // Store globally so PKF scripts can access
-            window.PKF_ENGINE = {
-                startKey: startKey,
-                keysPerPage: KEYS_PER_PAGE,
-                toHex64: toHex64
-            };
+            window.PKF_ENGINE = { startKey: startKey, keysPerPage: KEYS_PER_PAGE, toHex64: toHex64 };
         }
 
-        // Run when DOM is ready
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', init);
         } else {
