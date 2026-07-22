@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="./assets/js/localhost-fix.js"></script>
+    <script>
+        (function() {
+            var theme = localStorage.getItem('pkf-theme') || 'light';
+            document.documentElement.setAttribute('data-bs-theme', theme);
+        })();
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Private Key Details - All Addresses & Formats</title>
+    <meta name="robots" content="noindex, follow">
+    <link rel="icon" type="image/x-icon" href="./favicon.ico">
+    <link href="./assets/css/bootstrap-purged.min.css" rel="stylesheet">
+    <link href="./assets/css/style.min.css" rel="stylesheet">
+    <style>
+        .kd-header { word-break: break-all; font-size: 1.5rem; }
+        .kd-section { background: var(--pkf-bg-secondary); border: 1px solid var(--pkf-border); border-radius: 12px; overflow: hidden; }
+        .kd-section-header { padding: 1rem; background: rgba(0,0,0,0.03); border-bottom: 1px solid var(--pkf-border); font-weight: 600; }
+        .kd-tbl, .kd-addr-tbl { width: 100%; border-collapse: collapse; }
+        .kd-tbl td, .kd-addr-tbl td, .kd-addr-tbl th { padding: 0.75rem 1rem; border-bottom: 1px solid var(--pkf-border); vertical-align: middle; }
+        .kd-tbl tr:last-child td, .kd-addr-tbl tr:last-child td { border-bottom: none; }
+        .kd-lbl { width: 140px; font-weight: 500; color: var(--pkf-text); }
+        .kd-val code, .kd-addr code { color: var(--pkf-primary); word-break: break-all; }
+        .kd-act { width: 40px; text-align: right; }
+        .kd-btn { background: none; border: none; color: #6c757d; cursor: pointer; padding: 0.25rem; }
+        .kd-btn:hover { color: var(--pkf-primary); }
+        [data-bs-theme="dark"] .kd-section-header { background: rgba(255,255,255,0.03); }
+        .crypto-icon { vertical-align: -0.15em; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-xl fixed-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="./index.html">
+                <span class="pkf-logo-text"><span>PrivateKey</span><span>Finder.io</span></span>
+            </a>
+            <div class="navbar-actions order-xl-last">
+                <button class="navbar-action-btn" id="themeToggle" title="Toggle theme">
+                    <svg width="15" height="15"><use href="./assets/svgs/icons.svg#icon-sun"></use></svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="container py-3">
+            <div id="keyDetailsContent">
+                <h1 class="kd-header mb-4">
+                    <code id="displayHex">Loading...</code>
+                </h1>
+
+                <div class="kd-section mb-4">
+                    <div class="kd-section-header">Keys</div>
+                    <table class="kd-tbl">
+                        <tr><td class="kd-lbl">HEX</td><td class="kd-val"><code id="keyHex"></code></td><td class="kd-act"><button class="kd-btn" onclick="PKF.copy(document.getElementById('keyHex').textContent)">Copy</button></td></tr>
+                        <tr><td class="kd-lbl">Decimal</td><td class="kd-val"><code id="keyDecimal"></code></td><td class="kd-act"><button class="kd-btn" onclick="PKF.copy(document.getElementById('keyDecimal').textContent)">Copy</button></td></tr>
+                        <tr><td class="kd-lbl">WIF (c)</td><td class="kd-val"><code id="keyWifCompressed"></code></td><td class="kd-act"><button class="kd-btn" onclick="PKF.copy(document.getElementById('keyWifCompressed').textContent)">Copy</button></td></tr>
+                        <tr><td class="kd-lbl">WIF (u)</td><td class="kd-val"><code id="keyWifUncompressed"></code></td><td class="kd-act"><button class="kd-btn" onclick="PKF.copy(document.getElementById('keyWifUncompressed').textContent)">Copy</button></td></tr>
+                        <tr><td class="kd-lbl">PubKey (c)</td><td class="kd-val"><code id="pubKeyCompressed"></code></td><td class="kd-act"><button class="kd-btn" onclick="PKF.copy(document.getElementById('pubKeyCompressed').textContent)">Copy</button></td></tr>
+                        <tr><td class="kd-lbl">PubKey (u)</td><td class="kd-val"><code id="pubKeyUncompressed"></code></td><td class="kd-act"><button class="kd-btn" onclick="PKF.copy(document.getElementById('pubKeyUncompressed').textContent)">Copy</button></td></tr>
+                    </table>
+                </div>
+
+                <div class="kd-section">
+                    <div class="kd-section-header">Addresses</div>
+                    <table class="kd-addr-tbl">
+                        <thead><tr><th>Chain</th><th>Type</th><th>Address</th><th>Action</th></tr></thead>
+                        <tbody id="addressList">
+                            <tr><td>BTC</td><td>Legacy (c)</td><td><code id="btcLegacyC"></code></td><td><button class="kd-btn" onclick="PKF.copy(document.getElementById('btcLegacyC').textContent)">Copy</button></td></tr>
+                            <tr><td>BTC</td><td>Legacy (u)</td><td><code id="btcLegacyU"></code></td><td><button class="kd-btn" onclick="PKF.copy(document.getElementById('btcLegacyU').textContent)">Copy</button></td></tr>
+                            <tr><td>BTC</td><td>SegWit</td><td><code id="btcSegwit"></code></td><td><button class="kd-btn" onclick="PKF.copy(document.getElementById('btcSegwit').textContent)">Copy</button></td></tr>
+                            <tr><td>EVM</td><td>0x</td><td><code id="evmAddress"></code></td><td><button class="kd-btn" onclick="PKF.copy(document.getElementById('evmAddress').textContent)">Copy</button></td></tr>
+                            <tr><td>TRON</td><td>Base58</td><td><code id="tronAddress"></code></td><td><button class="kd-btn" onclick="PKF.copy(document.getElementById('tronAddress').textContent)">Copy</button></td></tr>
+                            <tr><td>DOGE</td><td>Legacy</td><td><code id="dogeLegacy"></code></td><td><button class="kd-btn" onclick="PKF.copy(document.getElementById('dogeLegacy').textContent)">Copy</button></td></tr>
+                            <tr><td>LTC</td><td>Legacy</td><td><code id="ltcLegacy"></code></td><td><button class="kd-btn" onclick="PKF.copy(document.getElementById('ltcLegacy').textContent)">Copy</button></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Crypto Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/ethers@6.9.0/dist/ethers.umd.min.js"></script>
+    <script type="module">
+        import * as sha256Module from 'https://esm.sh/@noble/hashes@1.7.1/sha256';
+        import * as ripemd160Module from 'https://esm.sh/@noble/hashes@1.7.1/ripemd160';
+        import * as secp256k1Module from 'https://esm.sh/@noble/curves@1.8.1/secp256k1';
+        window.NobleHashes = { sha256Module, ripemd160Module };
+        window.NobleCurves = { secp256k1Module };
+        window.dispatchEvent(new Event('noble-loaded'));
+    </script>
+
+    <script>
+        window.PKF = {
+            copy: function(txt) {
+                navigator.clipboard.writeText(txt).then(function() { alert('Copied!'); });
+            }
+        };
+
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            var results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
+
+        // Base58 implementation
+        var ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+        function toBase58(buffer) {
+            var digits = [0];
+            for (var i = 0; i < buffer.length; ++i) {
+                for (var j = 0; j < digits.length; ++j) digits[j] <<= 8;
+                digits[0] += buffer[i];
+                var carry = 0;
+                for (var j = 0; j < digits.length; ++j) {
+                    digits[j] += carry;
+                    carry = (digits[j] / 58) | 0;
+                    digits[j] %= 58;
+                }
+                while (carry) {
+                    digits.push(carry % 58);
+                    carry = (carry / 58) | 0;
+                }
+            }
+            for (var i = 0; buffer[i] === 0 && i < buffer.length - 1; ++i) digits.push(0);
+            return digits.reverse().map(function(digit) { return ALPHABET[digit]; }).join('');
+        }
+
+        function base58check(prefix, payload) {
+            var sha256 = window.NobleHashes.sha256Module.sha256;
+            var buf = new Uint8Array(1 + payload.length);
+            buf[0] = prefix;
+            buf.set(payload, 1);
+            var hash = sha256(sha256(buf));
+            var finalBuf = new Uint8Array(buf.length + 4);
+            finalBuf.set(buf);
+            finalBuf.set(hash.slice(0, 4), buf.length);
+            return toBase58(finalBuf);
+        }
+        
+        // Bech32 implementation for Segwit
+        const BECH32_CHARSET = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l';
+        function bech32Polymod(values) {
+            var generator = [0x3b6a57b2, 0x26508e6d, 0x1ea119fa, 0x3d4233dd, 0x2a1462b3];
+            var chk = 1;
+            for (var p = 0; p < values.length; ++p) {
+                var top = chk >> 25;
+                chk = (chk & 0x1ffffff) << 5 ^ values[p];
+                for (var i = 0; i < 5; ++i) {
+                    if ((top >> i) & 1) chk ^= generator[i];
+                }
+            }
+            return chk;
+        }
+        function bech32HrpExpand(hrp) {
+            var ret = [];
+            var p;
+            for (p = 0; p < hrp.length; ++p) ret.push(hrp.charCodeAt(p) >> 5);
+            ret.push(0);
+            for (p = 0; p < hrp.length; ++p) ret.push(hrp.charCodeAt(p) & 31);
+            return ret;
+        }
+        function bech32CreateChecksum(hrp, data) {
+            var values = bech32HrpExpand(hrp).concat(data).concat([0, 0, 0, 0, 0, 0]);
+            var mod = bech32Polymod(values) ^ 1;
+            var ret = [];
+            for (var p = 0; p < 6; ++p) ret.push((mod >> 5 * (5 - p)) & 31);
+            return ret;
+        }
+        function bech32Encode(hrp, data) {
+            var combined = data.concat(bech32CreateChecksum(hrp, data));
+            var ret = hrp + '1';
+            for (var p = 0; p < combined.length; ++p) ret += BECH32_CHARSET.charAt(combined[p]);
+            return ret;
+        }
+        function convertbits(data, frombits, tobits, pad) {
+            var acc = 0, bits = 0, ret = [], maxv = (1 << tobits) - 1;
+            for (var p = 0; p < data.length; ++p) {
+                var value = data[p];
+                if (value < 0 || (value >> frombits) !== 0) return null;
+                acc = (acc << frombits) | value;
+                bits += frombits;
+                while (bits >= tobits) {
+                    bits -= tobits;
+                    ret.push((acc >> bits) & maxv);
+                }
+            }
+            if (pad) {
+                if (bits > 0) ret.push((acc << (tobits - bits)) & maxv);
+            } else if (bits >= frombits || ((acc << (tobits - bits)) & maxv)) {
+                return null;
+            }
+            return ret;
+        }
+
+        window.addEventListener('noble-loaded', function() {
+            var keyParam = getUrlParameter('k');
+            if (!keyParam) keyParam = "0000000000000000000000000000000000000000000000000000000000000001";
+            keyParam = keyParam.replace(/^0x/i, '').padStart(64, '0');
+            
+            document.getElementById('displayHex').textContent = keyParam;
+            document.getElementById('keyHex').textContent = keyParam;
+            document.getElementById('keyDecimal').textContent = BigInt('0x' + keyParam).toString();
+
+            var secp = window.NobleCurves.secp256k1Module.secp256k1;
+            var sha256 = window.NobleHashes.sha256Module.sha256;
+            var rmd160 = window.NobleHashes.ripemd160Module.ripemd160;
+
+            var privInt = BigInt('0x' + keyParam);
+            var privBytes = new Uint8Array(32);
+            var tempStr = keyParam;
+            for (var i = 0; i < 32; i++) {
+                privBytes[i] = parseInt(tempStr.slice(i*2, i*2+2), 16);
+            }
+
+            var pubBytesC = secp.getPublicKey(privInt, true);
+            var pubBytesU = secp.getPublicKey(privInt, false);
+
+            document.getElementById('pubKeyCompressed').textContent = Array.from(pubBytesC).map(x => x.toString(16).padStart(2,'0')).join('');
+            document.getElementById('pubKeyUncompressed').textContent = Array.from(pubBytesU).map(x => x.toString(16).padStart(2,'0')).join('');
+
+            // WIF Uncompressed
+            document.getElementById('keyWifUncompressed').textContent = base58check(0x80, privBytes);
+            // WIF Compressed
+            var privBytesC = new Uint8Array(33);
+            privBytesC.set(privBytes);
+            privBytesC[32] = 0x01;
+            document.getElementById('keyWifCompressed').textContent = base58check(0x80, privBytesC);
+
+            function h160(b) { return rmd160(sha256(b)); }
+
+            // BTC Legacy
+            document.getElementById('btcLegacyC').textContent = base58check(0x00, h160(pubBytesC));
+            document.getElementById('btcLegacyU').textContent = base58check(0x00, h160(pubBytesU));
+            
+            // BTC Segwit
+            var prog = convertbits(Array.from(h160(pubBytesC)), 8, 5, true);
+            document.getElementById('btcSegwit').textContent = bech32Encode('bc', [0].concat(prog));
+
+            // EVM
+            try {
+                var wallet = new ethers.Wallet('0x' + keyParam);
+                document.getElementById('evmAddress').textContent = wallet.address;
+            } catch(e) {
+                document.getElementById('evmAddress').textContent = 'Error';
+            }
+
+            // TRON
+            try {
+                var evmAddr = document.getElementById('evmAddress').textContent;
+                var tronPayload = new Uint8Array(20);
+                for(var i=0; i<20; i++) tronPayload[i] = parseInt(evmAddr.slice(2+i*2, 4+i*2), 16);
+                document.getElementById('tronAddress').textContent = base58check(0x41, tronPayload);
+            } catch(e) {}
+
+            // DOGE
+            document.getElementById('dogeLegacy').textContent = base58check(0x1e, h160(pubBytesC));
+            
+            // LTC
+            document.getElementById('ltcLegacy').textContent = base58check(0x30, h160(pubBytesC));
+        });
+    </script>
+</body>
+</html>

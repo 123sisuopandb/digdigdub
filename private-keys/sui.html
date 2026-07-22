@@ -746,7 +746,7 @@ header{margin-bottom:1.5rem}
     (function() {
         'use strict';
 
-        var KEYS_PER_PAGE = 128;
+        var KEYS_PER_PAGE = 60;
         // secp256k1 / Ed25519 max private key (valid for all supported chains)
         var MAX_KEY = BigInt('0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364140');
         var MIN_KEY = BigInt(1);
@@ -780,14 +780,14 @@ header{margin-bottom:1.5rem}
         }
 
         // TRUE RANDOM: uniform across bit-lengths 1-256 (not value-uniform)
-        // Each click picks a random bit-length 1-256, then a key in that range
+        // Each click generates a brand-new key in ANY bit range 1 to 256
         window.PKF_GetRandomPageUrl = function() {
-            // Step 1: Random bit-length 1 to 256
+            // Step 1: Pick a random bit-length from 1 to 256
             var b = new Uint8Array(1);
             crypto.getRandomValues(b);
-            var bits = b[0] % 256 + 1;
+            var bits = b[0] % 256 + 1; // 1 to 256
 
-            // Step 2: Random number with exactly 'bits' bits
+            // Step 2: Generate random number with exactly 'bits' bits
             var bytesNeeded = Math.ceil(bits / 8);
             var rb = new Uint8Array(bytesNeeded);
             crypto.getRandomValues(rb);
@@ -801,11 +801,12 @@ header{margin-bottom:1.5rem}
             if (range > BigInt(0)) n = (n % range) + lo;
             else n = lo;
 
-            // Step 4: Clamp and align to page
+            // Step 4: Clamp and align to page start
             if (n < MIN_KEY) n = MIN_KEY;
             if (n > MAX_KEY) n = MAX_KEY;
             var pn = BigInt(KEYS_PER_PAGE);
-            return makePageUrl(((n - MIN_KEY) / pn) * pn + MIN_KEY);
+            var pageStart = ((n - MIN_KEY) / pn) * pn + MIN_KEY;
+            return makePageUrl(pageStart);
         };
 
         function getPageNumber(startKey) {
@@ -824,7 +825,7 @@ header{margin-bottom:1.5rem}
                 var hexKey = toHex64(k);
                 html += '<div class="key-row" data-index="' + i + '">';
                 html += '<div class="col-key">';
-                html += '<a href="../key/' + hexKey + '.html" rel="nofollow" class="private-key key-link">' + hexKey + '</a>';
+                html += '<a href="../key.html?k=' + hexKey + '" rel="nofollow" class="private-key key-link">' + hexKey + '</a>';
                 html += '<button class="copy-btn" onclick="PKF.copy(\'' + hexKey + '\')" title="Copy">';
                 html += '<img src="../assets/svgs/regular/copy.svg" class="fa-icon " width="12" height="12" alt="">';
                 html += '</button></div>';
@@ -958,7 +959,8 @@ header{margin-bottom:1.5rem}
             window.PKF_ENGINE = { startKey: startKey, keysPerPage: KEYS_PER_PAGE, toHex64: toHex64 };
         }
 
-        // Run immediately - keysContainer is already in DOM before this script tag
+        // Call immediately - keysContainer is in DOM before this <script> tag
+        // This ensures keys are rendered BEFORE deferred scripts (app.obf.js) run
         init();
     })();
     </script>
