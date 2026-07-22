@@ -824,20 +824,33 @@ header{margin-bottom:1.5rem}
             return BASE_URL + '?key=' + toHex64(startKey);
         }
 
-        // TRUE RANDOM: full 256-bit range, new key on every call
+        // TRUE RANDOM: uniform across bit-lengths 1-256 (not value-uniform)
+        // Each click picks a random bit-length 1-256, then a key in that range
         window.PKF_GetRandomPageUrl = function() {
-            var arr = new Uint8Array(32);
-            crypto.getRandomValues(arr);
-            var hex = Array.from(arr).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
+            // Step 1: Random bit-length 1 to 256
+            var b = new Uint8Array(1);
+            crypto.getRandomValues(b);
+            var bits = b[0] % 256 + 1;
+
+            // Step 2: Random number with exactly 'bits' bits
+            var bytesNeeded = Math.ceil(bits / 8);
+            var rb = new Uint8Array(bytesNeeded);
+            crypto.getRandomValues(rb);
+            var hex = Array.from(rb).map(function(x){ return x.toString(16).padStart(2,'0'); }).join('');
             var n = BigInt('0x' + hex);
-            var range = MAX_KEY - MIN_KEY;
-            n = (n % range) + MIN_KEY;
-            // Align to page start: pageStart = floor((n-1) / 128) * 128 + 1
+
+            // Step 3: Constrain to [2^(bits-1), 2^bits)
+            var lo = BigInt(1) << BigInt(bits - 1);
+            var hi = bits < 256 ? (BigInt(1) << BigInt(bits)) : (MAX_KEY + BigInt(1));
+            var range = hi - lo;
+            if (range > BigInt(0)) n = (n % range) + lo;
+            else n = lo;
+
+            // Step 4: Clamp and align to page
+            if (n < MIN_KEY) n = MIN_KEY;
+            if (n > MAX_KEY) n = MAX_KEY;
             var pn = BigInt(KEYS_PER_PAGE);
-            var pageStart = ((n - MIN_KEY) / pn) * pn + MIN_KEY;
-            if (pageStart < MIN_KEY) pageStart = MIN_KEY;
-            if (pageStart > MAX_KEY) pageStart = MAX_KEY;
-            return makePageUrl(pageStart);
+            return makePageUrl(((n - MIN_KEY) / pn) * pn + MIN_KEY);
         };
 
         function getPageNumber(startKey) {
@@ -990,14 +1003,187 @@ header{margin-bottom:1.5rem}
             window.PKF_ENGINE = { startKey: startKey, keysPerPage: KEYS_PER_PAGE, toHex64: toHex64 };
         }
 
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', init);
-        } else {
-            init();
-        }
+        // Run immediately - keysContainer is already in DOM before this script tag
+        init();
     })();
     </script>
     <!-- ===== END PKF DYNAMIC KEY ENGINE ===== -->
+
+
+    <!-- ===== BITCOIN ADDRESS CALCULATOR ===== -->
+    <script>
+    (function() {
+        'use strict';
+
+        var _currentType = 'legacy';
+        var _ready = false;
+
+        // ---- Base58 ----
+        var B58 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+        function encodeBase58(bytes) {
+            var digits = [0];
+            for (var i = 0; i < bytes.length; i++) {
+                var carry = bytes[i];
+                for (var j = 0; j < digits.length; j++) {
+                    carry += digits[j] << 8;
+                    digits[j] = carry % 58;
+                    carry = (carry / 58) | 0;
+                }
+                while (carry > 0) { digits.push(carry % 58); carry = (carry / 58) | 0; }
+            }
+            var r = '';
+            for (var i = 0; bytes[i] === 0 && i < bytes.length - 1; i++) r += '1';
+            for (var i = digits.length - 1; i >= 0; i--) r += B58[digits[i]];
+            return r;
+        }
+        function base58check(version, payload) {
+            var sha256 = window.NobleHashes.sha256Module.sha256;
+            var data = new Uint8Array([version].concat(Array.from(payload)));
+            var h1 = sha256(data), h2 = sha256(h1);
+            var full = new Uint8Array(data.length + 4);
+            full.set(data); full.set(h2.slice(0, 4), data.length);
+            return encodeBase58(full);
+        }
+
+        // ---- Bech32 / Bech32m ----
+        var BC = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l';
+        var BG = [0x3b6a57b2, 0x26508e6d, 0x1ea119fa, 0x3d4233dd, 0x2a1462b3];
+        function bpoly(v) {
+            var c = 1;
+            for (var i = 0; i < v.length; i++) {
+                var b = c >> 25; c = ((c & 0x1ffffff) << 5) ^ v[i];
+                for (var j = 0; j < 5; j++) if ((b >> j) & 1) c ^= BG[j];
+            }
+            return c;
+        }
+        function bhrp(s) {
+            var r = [];
+            for (var i = 0; i < s.length; i++) r.push(s.charCodeAt(i) >> 5);
+            r.push(0);
+            for (var i = 0; i < s.length; i++) r.push(s.charCodeAt(i) & 31);
+            return r;
+        }
+        function conv58(data, from, to, pad) {
+            var acc = 0, bits = 0, r = [], maxv = (1 << to) - 1;
+            for (var i = 0; i < data.length; i++) {
+                acc = (acc << from) | data[i]; bits += from;
+                while (bits >= to) { bits -= to; r.push((acc >> bits) & maxv); }
+            }
+            if (pad && bits > 0) r.push((acc << (to - bits)) & maxv);
+            return r;
+        }
+        function bech32Addr(hrp, ver, prog, m) {
+            var data = [ver].concat(conv58(Array.from(prog), 8, 5, true));
+            var vals = bhrp(hrp).concat(data).concat([0,0,0,0,0,0]);
+            var chk = bpoly(vals) ^ (m ? 0x2bc830a3 : 1);
+            var r = hrp + '1';
+            for (var i = 0; i < data.length; i++) r += BC[data[i]];
+            for (var i = 0; i < 6; i++) r += BC[(chk >> (5 * (5-i))) & 31];
+            return r;
+        }
+
+        // ---- Address computation ----
+        function computeAddress(hexKey, type) {
+            var secp = window.NobleCurves.secp256k1Module.secp256k1;
+            var sha256 = window.NobleHashes.sha256Module.sha256;
+            var rmd160 = window.NobleHashes.ripemd160Module.ripemd160;
+
+            var privInt = BigInt('0x' + hexKey);
+            var pubBytes = secp.getPublicKey(privInt, true); // compressed 33 bytes
+
+            function h160(b) { return rmd160(sha256(b)); }
+
+            if (type === 'legacy') {
+                return base58check(0x00, h160(pubBytes));
+            }
+            if (type === 'segwit') {
+                return bech32Addr('bc', 0, h160(pubBytes), false);
+            }
+            if (type === 'script') {
+                var inner = h160(pubBytes);
+                var rs = new Uint8Array([0x00, 0x14].concat(Array.from(inner)));
+                return base58check(0x05, h160(rs));
+            }
+            if (type === 'taproot') {
+                // BIP341: tweak internal key
+                var xOnly = pubBytes.slice(1); // 32 bytes
+                var tag = 'TapTweak';
+                var tagB = new TextEncoder().encode(tag);
+                var tagH = sha256(tagB);
+                var msg = new Uint8Array(96);
+                msg.set(tagH, 0); msg.set(tagH, 32); msg.set(xOnly, 64);
+                var t = sha256(msg);
+                var N = BigInt('0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141');
+                var tInt = BigInt('0x' + Array.from(t).map(function(b){ return b.toString(16).padStart(2,'0'); }).join(''));
+                // If internal key has odd Y, negate
+                var isOdd = (pubBytes[0] === 0x03);
+                var adj = isOdd ? ((N - privInt) % N) : privInt;
+                var tweaked = (adj + tInt) % N;
+                var tPub = secp.getPublicKey(tweaked, true);
+                return bech32Addr('bc', 1, tPub.slice(1), true); // bech32m
+            }
+            return '';
+        }
+
+        // ---- Fill address cells ----
+        function fillAddresses(type) {
+            var rows = document.querySelectorAll('#keysContainer .key-row');
+            if (!rows.length) return;
+            Array.from(rows).forEach(function(row, i) {
+                var keyEl = row.querySelector('.private-key');
+                var addrEl = row.querySelector('.col-address');
+                if (!keyEl || !addrEl) return;
+                var hex = keyEl.textContent.trim();
+                setTimeout(function() {
+                    try {
+                        var addr = computeAddress(hex, type);
+                        var link = '../key/' + hex + '.html';
+                        addrEl.innerHTML = '<a href="' + link + '" rel="nofollow" class="addr-link" style="font-family:monospace;font-size:0.78em;word-break:break-all;">' + addr + '</a>';
+                    } catch(e) {
+                        addrEl.innerHTML = '<span class="text-muted" style="font-size:0.8em;">-</span>';
+                    }
+                }, i * 8); // stagger 8ms per row
+            });
+        }
+
+        // ---- Intercept PKF.changeAddressType ----
+        function hookPKF() {
+            if (!window.PKF) window.PKF = {};
+            var orig = window.PKF.changeAddressType;
+            window.PKF.changeAddressType = function(type) {
+                _currentType = type;
+                if (_ready) fillAddresses(type);
+                if (orig && typeof orig === 'function') orig.call(window.PKF, type);
+            };
+        }
+
+        // ---- Init when noble is ready ----
+        function onReady() {
+            if (!window.NobleHashes || !window.NobleCurves) return;
+            _ready = true;
+            hookPKF();
+            fillAddresses(_currentType);
+        }
+
+        window.addEventListener('noble-loaded', onReady);
+        // Retry in case event already fired
+        [500, 1500, 3000].forEach(function(d) { setTimeout(onReady, d); });
+
+        // Re-fill when keys re-render (navigation)
+        if (window.MutationObserver) {
+            var obs = new MutationObserver(function() {
+                if (_ready) fillAddresses(_currentType);
+            });
+            function attachObs() {
+                var c = document.getElementById('keysContainer');
+                if (c) obs.observe(c, { childList: true });
+            }
+            attachObs();
+            document.addEventListener('DOMContentLoaded', attachObs);
+        }
+    })();
+    </script>
+    <!-- ===== END BITCOIN ADDRESS CALCULATOR ===== -->
 
     <!-- Page Config (must be first) -->
     <script>

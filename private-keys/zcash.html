@@ -783,20 +783,33 @@ header{margin-bottom:1.5rem}
             return BASE_URL + '?key=' + toHex64(startKey);
         }
 
-        // TRUE RANDOM: full 256-bit range, new key on every call
+        // TRUE RANDOM: uniform across bit-lengths 1-256 (not value-uniform)
+        // Each click picks a random bit-length 1-256, then a key in that range
         window.PKF_GetRandomPageUrl = function() {
-            var arr = new Uint8Array(32);
-            crypto.getRandomValues(arr);
-            var hex = Array.from(arr).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
+            // Step 1: Random bit-length 1 to 256
+            var b = new Uint8Array(1);
+            crypto.getRandomValues(b);
+            var bits = b[0] % 256 + 1;
+
+            // Step 2: Random number with exactly 'bits' bits
+            var bytesNeeded = Math.ceil(bits / 8);
+            var rb = new Uint8Array(bytesNeeded);
+            crypto.getRandomValues(rb);
+            var hex = Array.from(rb).map(function(x){ return x.toString(16).padStart(2,'0'); }).join('');
             var n = BigInt('0x' + hex);
-            var range = MAX_KEY - MIN_KEY;
-            n = (n % range) + MIN_KEY;
-            // Align to page start: pageStart = floor((n-1) / 128) * 128 + 1
+
+            // Step 3: Constrain to [2^(bits-1), 2^bits)
+            var lo = BigInt(1) << BigInt(bits - 1);
+            var hi = bits < 256 ? (BigInt(1) << BigInt(bits)) : (MAX_KEY + BigInt(1));
+            var range = hi - lo;
+            if (range > BigInt(0)) n = (n % range) + lo;
+            else n = lo;
+
+            // Step 4: Clamp and align to page
+            if (n < MIN_KEY) n = MIN_KEY;
+            if (n > MAX_KEY) n = MAX_KEY;
             var pn = BigInt(KEYS_PER_PAGE);
-            var pageStart = ((n - MIN_KEY) / pn) * pn + MIN_KEY;
-            if (pageStart < MIN_KEY) pageStart = MIN_KEY;
-            if (pageStart > MAX_KEY) pageStart = MAX_KEY;
-            return makePageUrl(pageStart);
+            return makePageUrl(((n - MIN_KEY) / pn) * pn + MIN_KEY);
         };
 
         function getPageNumber(startKey) {
@@ -949,11 +962,8 @@ header{margin-bottom:1.5rem}
             window.PKF_ENGINE = { startKey: startKey, keysPerPage: KEYS_PER_PAGE, toHex64: toHex64 };
         }
 
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', init);
-        } else {
-            init();
-        }
+        // Run immediately - keysContainer is already in DOM before this script tag
+        init();
     })();
     </script>
     <!-- ===== END PKF DYNAMIC KEY ENGINE ===== -->
